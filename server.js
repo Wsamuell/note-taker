@@ -9,7 +9,7 @@ const database = require('./Develop/db/db.json')
 // importing express so we can use in in the project
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3000;
 
 // linking the assets so that they are static and not interrupted
 app.use(express.static('Develop/public'));
