@@ -24,16 +24,51 @@ app.use(express.json());
 // routes for HTML 
 app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "/Develop/public/notes.html"));
-  });
+});
 
-  app.get("*", (req, res) => {
+app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "/Develop/public/index.html"));
-  });
+});
+
+
+// routes to return API calls to display prior content from DB
+app.route('/api/notes')
+    .get(function (req, res) {
+        res.json({ database })
+    })
+    .post(function (req, res) {
+        const newJSON = (path.join(__dirname, "/Develop/db/db.json"));
+        const newNote = req.body;
+
+        let notesId = 100;
+        for (let i = 0; i < database.length; i++) {
+            let note = database[i];
+            if (note.id > notesId) {
+                notesId = note.id
+            }
+        }
+        newNote.id = notesId + 1;
+        database.push(newNote)
+
+        //  retrieving the stored data so that PH can have it displayed in the app
+
+        fs.writeFile(newJSON, JSON.stringify(database), function (err) {
+
+            if (err) {
+                return console.log(err);
+            }
+            console.log("New notes saved");
+        });
+// display notes on page
+        res.json(newNote);
+
+    })
+
 
 
 
 
 // start listening
 app.listen(PORT, () => {
-	console.log(`App listening on PORT ${PORT}`);
+    console.log(`App listening on PORT ${PORT}`);
 });
